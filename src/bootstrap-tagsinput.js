@@ -262,9 +262,9 @@
             var map = this.map,
                 data = typeahead.source(query);
 
-            if ($.isFunction(data.success)) {
+            if ($.isFunction(data.then)) {
               // support for Angular promises
-              data.success(processItems);
+              data.then(processItems);
             } else {
               // support for functions and jquery promises
               $.when(data)

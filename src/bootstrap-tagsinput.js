@@ -61,7 +61,7 @@
 
       // Throw an error when trying to add an object while the itemValue option was not set
       if (typeof item === "object" && !self.objectItems)
-        throw("Can't add objects when itemValue option is not set");
+        throw "Can't add objects when itemValue option is not set";
 
       // Ignore strings only containg whitespace
       if (item.toString().match(/^\s*$/))
@@ -230,8 +230,8 @@
       self.options = $.extend({}, defaultOptions, options);
       var typeahead = self.options.typeahead || {};
 
-      // When itemValue is set, freeInput should always be false
-      if (self.objectItems)
+      // When itemValue is set and no onFreeInput handler, freeInput should be false
+      if (self.objectItems && typeof options.onFreeInput !== 'function')
         self.options.freeInput = false;
 
       makeOptionItemFunction(self.options, 'itemValue');
@@ -338,7 +338,12 @@
             // When key corresponds one of the confirmKeys, add current input
             // as a new tag
             if (self.options.freeInput && $.inArray(event.which, self.options.confirmKeys) >= 0) {
-              self.add($input.val());
+              var item = $input.val();
+              if (self.objectItems) {
+                // call tag constructor function/freeinput handler
+                item = self.options.onFreeInput(item);
+              }
+              self.add(item);
               $input.val('');
               event.preventDefault();
             }

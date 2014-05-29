@@ -33,6 +33,7 @@ angular.module('bootstrap-tagsinput', [])
           },
           itemValue: getItemProperty(scope, attrs.itemvalue),
           itemText : getItemProperty(scope, attrs.itemtext),
+          onFreeInput: getItemProperty(scope, attrs.onfreeinput),
           tagClass : angular.isFunction(scope.$parent[attrs.tagclass]) ? scope.$parent[attrs.tagclass] : function(item) { return attrs.tagclass; }
         });
 
@@ -51,9 +52,13 @@ angular.module('bootstrap-tagsinput', [])
             scope.model.splice(idx, 1);
         });
         
-        scope.$watch('model', function() {
+        scope.$watch('model', function(oldVal, newVal) {
           var i, model = scope.model,
               len = model.length;
+          if (oldVal === newVal) {
+            // ignore init call
+            return;
+          }
 
           select.tagsinput('removeAll');
 

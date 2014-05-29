@@ -50,28 +50,15 @@ angular.module('bootstrap-tagsinput', [])
           if (idx !== -1)
             scope.model.splice(idx, 1);
         });
+        
+        scope.$watch('model', function() {
+          var i, model = scope.model,
+              len = model.length;
 
-        // create a shallow copy of model's current state, needed to determine
-        // diff when model changes
-        var prev = scope.model.slice();
-        scope.$watch("model", function() {
-          var added = scope.model.filter(function(i) {return prev.indexOf(i) === -1;}),
-              removed = prev.filter(function(i) {return scope.model.indexOf(i) === -1;}),
-              i;
+          select.tagsinput('removeAll');
 
-          prev = scope.model.slice();
-
-          // Remove tags no longer in binded model
-          for (i = 0; i < removed.length; i++) {
-            select.tagsinput('remove', removed[i]);
-          }
-
-          // Refresh remaining tags
-          select.tagsinput('refresh');
-
-          // Add new items in model as tags
-          for (i = 0; i < added.length; i++) {
-            select.tagsinput('add', added[i]);
+          for (i = 0; i < len; i++) {
+            select.tagsinput('add', model[i]);
           }
         }, true);
       });

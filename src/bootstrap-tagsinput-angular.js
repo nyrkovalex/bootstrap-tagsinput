@@ -53,8 +53,7 @@ angular.module('bootstrap-tagsinput', [])
         });
         
         scope.$watch('model', function(oldVal, newVal) {
-          var i, model = scope.model,
-              len = model.length;
+          var i, len, model = scope.model;
           if (oldVal === newVal) {
             // ignore init call
             return;
@@ -62,7 +61,7 @@ angular.module('bootstrap-tagsinput', [])
 
           select.tagsinput('removeAll');
 
-          for (i = 0; i < len; i++) {
+          for (i = 0, len = model.length; i < len; i++) {
             select.tagsinput('add', model[i]);
           }
         }, true);

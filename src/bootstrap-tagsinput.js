@@ -275,10 +275,15 @@
             self.add(this.map[text]);
           },
           matcher: function (text) {
-            resetInpuSize(); //We need to do this as typeahead prevent input event propagation
             return (text.toLowerCase().indexOf(this.query.trim().toLowerCase()) !== -1);
           },
           sorter: function (texts) {
+            // Moved here from input event handler. This is a workaround to have    
+            // input size is reset with typeahead list open.                        
+            // This place was chosen because function is called once per every input
+            var $input = self.$input;
+            $input.attr('size', Math.max(self.inputSize, $input.val().length));
+                             
             return texts.sort();
           },
           highlighter: function (text) {
@@ -291,12 +296,6 @@
       self.$container.on('click', $.proxy(function(event) {
         self.$input.focus();
       }, self));
-
-      function resetInpuSize() {
-        // Reset internal input's size
-        var $input = self.$input;
-        $input.attr('size', Math.max(self.inputSize, $input.val().length));
-      }
 
       self.$container.on('keydown', 'input', $.proxy(function(event) {
         var $input = $(event.target),
@@ -357,8 +356,6 @@
               event.preventDefault();
             }
         }
-
-        resetInpuSize();
 
       }, self));
 

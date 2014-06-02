@@ -230,7 +230,7 @@
       self.options = $.extend({}, defaultOptions, options);
       var typeahead = self.options.typeahead || {};
 
-      // When itemValue is set and no onFreeInput handler, freeInput should be false
+      // When itemValue is set, freeInput should always be false
       if (self.objectItems && typeof options.onFreeInput !== 'function')
         self.options.freeInput = false;
 
@@ -275,6 +275,7 @@
             self.add(this.map[text]);
           },
           matcher: function (text) {
+            resetInpuSize(); //We need to do this as typeahead prevent input event propagation
             return (text.toLowerCase().indexOf(this.query.trim().toLowerCase()) !== -1);
           },
           sorter: function (texts) {
@@ -290,6 +291,12 @@
       self.$container.on('click', $.proxy(function(event) {
         self.$input.focus();
       }, self));
+
+      function resetInpuSize() {
+        // Reset internal input's size
+        var $input = self.$input;
+        $input.attr('size', Math.max(self.inputSize, $input.val().length));
+      }
 
       self.$container.on('keydown', 'input', $.proxy(function(event) {
         var $input = $(event.target),
@@ -334,14 +341,16 @@
               $input.focus();
             }
             break;
-         default:
+          default:
             // When key corresponds one of the confirmKeys, add current input
             // as a new tag
             if (self.options.freeInput && $.inArray(event.which, self.options.confirmKeys) >= 0) {
               var item = $input.val();
               if (self.objectItems) {
-                // call tag constructor function/freeinput handler
                 item = self.options.onFreeInput(item);
+              }
+              if (!item) {
+                break;
               }
               self.add(item);
               $input.val('');
@@ -349,8 +358,8 @@
             }
         }
 
-        // Reset internal input's size
-        $input.attr('size', Math.max(this.inputSize, $input.val().length));
+        resetInpuSize();
+
       }, self));
 
       // Remove icon clicked
